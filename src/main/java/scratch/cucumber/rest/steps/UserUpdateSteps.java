@@ -10,7 +10,7 @@ import javax.ws.rs.core.MediaType;
 import java.util.Map;
 
 import static javax.ws.rs.client.Entity.json;
-import static scratch.cucumber.rest.steps.UserFields.*;
+import static scratch.cucumber.rest.steps.UserFields.ID;
 
 @ContextConfiguration(classes = CucumberScratchConfiguration.class)
 public class UserUpdateSteps {

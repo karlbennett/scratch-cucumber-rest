@@ -38,50 +38,48 @@ public class ResponsesTest {
         responseTwo = mock(ClientResponse.class);
         responseThree = mock(ClientResponse.class);
 
-        responsesList = asList(responseThree, responseTwo, responseOne);
+        responsesList = asList(responseOne, responseTwo, responseThree);
     }
 
     @Test
-    public void testCreateWithDeque() {
+    @SuppressWarnings("UnusedDeclaration")
+    public void I_can_create_a_an_empty_responses_history() {
 
-        final Deque<ClientResponse> responseDeque = new ArrayDeque<ClientResponse>();
-        responseDeque.push(responseOne);
-        responseDeque.push(responseTwo);
-        responseDeque.push(responseThree);
-
-        iteratorTest(new Responses(responseDeque));
+        assertNoResponses(new Responses());
     }
 
     @Test
-    public void testAdd() {
+    public void I_can_create_a_responses_history_with_a_deque() {
 
-        final Responses responses = new Responses();
-        responses.add(responseOne);
-        responses.add(responseTwo);
-        responses.add(responseThree);
+        final Deque<ClientResponse> responseDeque = new ArrayDeque<>();
 
-        iteratorTest(responses);
-    }
-
-    public void iteratorTest(Responses responses) {
-
-        int count = 0;
-        for (ClientResponse response : responses) {
-
-            assertEquals("the response should be correct.", responsesList.get(count++), response);
+        for (ClientResponse response : responsesList) {
+            responseDeque.push(response);
         }
 
-        assertEquals("the number of responses should be correct.", responsesList.size(), count);
+        assertIterator(responsesList, new Responses(responseDeque));
+    }
+
+    @Test
+    public void I_can_add_responses_to_a_responses_history() {
+
+        final Responses responses = new Responses();
+
+        for (ClientResponse response : responsesList) {
+            responses.add(response);
+        }
+
+        assertIterator(responsesList, responses);
     }
 
     @Test(expected = NullPointerException.class)
-    public void testAddWithNull() {
+    public void I_cannot_create_a_responses_with_a_null_deque() {
 
         new Responses().add(null);
     }
 
     @Test
-    public void testLatest() {
+    public void I_can_get_the_latest_response() {
 
         final Responses responses = new Responses();
 
@@ -96,7 +94,7 @@ public class ResponsesTest {
     }
 
     @Test
-    public void testLatestWithNoResponses() {
+    public void I_cannot_get_the_latest_response_from_an_empty_responses_history() {
 
         final Responses responses = new Responses();
 
@@ -104,7 +102,7 @@ public class ResponsesTest {
     }
 
     @Test
-    public void testFilter() {
+    public void I_can_filter_the_responses_history_for_the_type_of_response_I_want() {
 
         when(responseOne.getStatus()).thenReturn(CREATED.getStatusCode());
         when(responseTwo.getStatus()).thenReturn(ACCEPTED.getStatusCode());
@@ -122,7 +120,7 @@ public class ResponsesTest {
     }
 
     @Test
-    public void testCreated() {
+    public void I_can_get_all_the_created_responses_from_the_responses_history() {
 
         when(responseOne.getStatus()).thenReturn(CREATED.getStatusCode());
         when(responseTwo.getStatus()).thenReturn(ACCEPTED.getStatusCode());
@@ -138,7 +136,7 @@ public class ResponsesTest {
     }
 
     @Test
-    public void testCreatedWithNoCreatedResponses() {
+    public void I_cannot_get_any_created_responses_from_the_responses_if_non_exists() {
 
         when(responseOne.getStatus()).thenReturn(OK.getStatusCode());
         when(responseTwo.getStatus()).thenReturn(ACCEPTED.getStatusCode());
@@ -153,7 +151,7 @@ public class ResponsesTest {
     }
 
     @Test
-    public void testClear() {
+    public void I_can_clear_the_responses_history() {
 
         final Responses responses = new Responses();
         responses.add(responseOne);
@@ -162,6 +160,23 @@ public class ResponsesTest {
 
         responses.clear();
 
+        assertNoResponses(responses);
+    }
+
+    public static void assertIterator(List<ClientResponse> responsesList, Responses responses) {
+
+        int lastIndex = responsesList.size() - 1;
+        int count = 0;
+
+        for (ClientResponse response : responses) {
+
+            assertEquals("the response should be correct.", responsesList.get(lastIndex - count++), response);
+        }
+
+        assertEquals("the number of responses should be correct.", responsesList.size(), count);
+    }
+
+    private static void assertNoResponses(Responses responses) {
         for (ClientResponse response : responses) {
             fail("there should be no responses: " + response);
         }

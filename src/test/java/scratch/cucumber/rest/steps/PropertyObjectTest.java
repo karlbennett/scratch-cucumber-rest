@@ -1,418 +1,273 @@
 package scratch.cucumber.rest.steps;
 
-import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.Callable;
 
-import static java.util.Collections.singletonMap;
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.sameInstance;
+import static java.lang.String.format;
+import static java.util.Collections.emptyMap;
+import static java.util.Collections.unmodifiableMap;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public class PropertyObjectTest {
 
-    private static final String ONE = "one";
-    private static final String TWO = "two";
-    private static final String THREE = "three";
-    private static final String FOUR = "four";
-    private static final String FIVE = "five";
-    private static final String SIX = "six";
-    private static final String SEVEN = "seven";
-    private static final String EIGHT = "eight";
-    private static final String NINE = "nine";
-    private static final String TEN = "ten";
+    private static final String KEY_ONE = "one";
+    private static final String KEY_TWO = "two";
+    private static final String KEY_THREE = "three";
+    private static final String KEY_FOUR = "four";
+    private static final String KEY_FIVE = "five";
+    private static final String KEY_SIX = "six";
+    private static final String KEY_SEVEN = "seven";
+    private static final String KEY_EIGHT = "eight";
+    private static final String KEY_NINE = "nine";
 
-    private static final String ONE_TWO = ONE + "." + TWO;
-    private static final String ONE_THREE = ONE + "." + THREE;
-    private static final String ONE_FOUR = ONE + "." + FOUR;
-    private static final String ONE_TWO_THREE = ONE_TWO + "." + THREE;
-    private static final String ONE_TWO_FOUR = ONE_TWO + "." + FOUR;
-    private static final String ONE_TWO_FIVE = ONE_TWO + "." + FIVE;
-    private static final String TWO_THREE = TWO + "." + THREE;
+    private static final int VALUE_ONE = 1;
+    private static final String VALUE_TWO = "2";
+    private static final float VALUE_FOUR = 4.0F;
+    private static final char VALUE_FIVE = 'V';
+    private static final long VALUE_SEVEN = 7;
+    private static final double VALUE_EIGHT = 8.0;
+    private static final boolean VALUE_NINE = true;
 
-    private static final String FOUR_FIVE = FOUR + "." + FIVE;
-    private static final String FOUR_FIVE_SIX = FOUR_FIVE + "." + SIX;
-    private static final String FOUR_FIVE_SIX_SEVEN = FOUR_FIVE_SIX + "." + SEVEN;
-    private static final String FIVE_SIX = FIVE + "." + SIX;
+    private static final Map<String, Object> MAP_SIX = unmodifiableMap(new HashMap<String, Object>() {{
+        put(KEY_SEVEN, VALUE_SEVEN);
+        put(KEY_EIGHT, VALUE_EIGHT);
+        put(KEY_NINE, VALUE_NINE);
+    }});
 
-    private static final String EIGHT_NINE = EIGHT + "." + NINE;
-    private static final String EIGHT_NINE_TEN = EIGHT_NINE + "." + TEN;
+    private static final Map<String, Object> MAP_THREE = unmodifiableMap(new HashMap<String, Object>() {{
+        put(KEY_FOUR, VALUE_FOUR);
+        put(KEY_FIVE, VALUE_FIVE);
+        put(KEY_SIX, MAP_SIX);
+    }});
 
-    private static final String NEW_VALUE = "new value";
+    private static final Map<String, Object> MAP = unmodifiableMap(new HashMap<String, Object>() {{
+        put(KEY_ONE, VALUE_ONE);
+        put(KEY_TWO, VALUE_TWO);
+        put(KEY_THREE, MAP_THREE);
+    }});
 
-    private static final String THREE_VALUE = "third layer value";
-    private static final Map<String, Object> TWO_VALUE = new HashMap<String, Object>() {{
-        put(THREE, THREE_VALUE);
-    }};
-    private static final Map<String, Object> ONE_VALUE = new HashMap<String, Object>() {{
-        put(TWO, TWO_VALUE);
-    }};
+    private static final String PROPERTY_FOUR = format("%s.%s", KEY_THREE, KEY_FOUR);
+    private static final String PROPERTY_FIVE = format("%s.%s", KEY_THREE, KEY_FIVE);
+    private static final String PROPERTY_SIX = format("%s.%s", KEY_THREE, KEY_SIX);
+    private static final String PROPERTY_SEVEN = format("%s.%s.%s", KEY_THREE, KEY_SIX, KEY_SEVEN);
+    private static final String PROPERTY_EIGHT = format("%s.%s.%s", KEY_THREE, KEY_SIX, KEY_EIGHT);
+    private static final String PROPERTY_NINE = format("%s.%s.%s", KEY_THREE, KEY_SIX, KEY_NINE);
 
-    private static final Float FOUR_VALUE = 4.0F;
+    @Test
+    public void I_can_create_an_empty_property_object() {
 
-    private static final String SIX_VALUE = "second layer value";
-
-    private static final Map<String, Object> FIVE_VALUE = new HashMap<String, Object>() {{
-        put(SIX, SIX_VALUE);
-    }};
-
-    private static final Map<String, Object> MAP = new HashMap<String, Object>() {{
-        put(ONE, ONE_VALUE);
-        put(FOUR, FOUR_VALUE);
-        put(FIVE, FIVE_VALUE);
-    }};
-
-    private PropertyObject propertyObject;
-    private PropertyObject copiedPropertyObject;
-
-    @Before
-    public void setUp() {
-
-        propertyObject = new PropertyObject(MAP);
-        copiedPropertyObject = new PropertyObject(propertyObject);
+        assertEquals("the property object should be empty.", emptyMap(), new PropertyObject().toMap());
     }
 
     @Test
-    public void testCreate() {
+    public void I_can_create_a_property_object_with_a_map() {
 
-        new PropertyObject();
+        assertEquals("the property objects map should be correct.", MAP, new PropertyObject(MAP).toMap());
+    }
+
+    @Test
+    public void I_can_create_a_property_object_with_another_property_object() {
+
+        final PropertyObject object = new PropertyObject(MAP);
+
+        assertEquals("the property objects should be equal.", object, new PropertyObject(object));
     }
 
     @Test(expected = NullPointerException.class)
-    public void testCreateWithPropertyObjectNull() {
-
-        new PropertyObject((PropertyObject) null);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void testCreateWithMapNull() {
+    public void I_cannot_create_a_property_object_from_a_null_map() {
 
         new PropertyObject((Map<String, Object>) null);
     }
 
-    @Test
-    public void testGet() {
-
-        getTest(propertyObject);
-        getTest(copiedPropertyObject);
-    }
-
-    public static void getTest(PropertyObject propertyObject) {
-
-        assertEquals("value one should be correct.", ONE_VALUE, propertyObject.get(ONE));
-        assertThat("value one should be a new map.", (Map<String, Object>) propertyObject.get(ONE),
-                not(sameInstance(ONE_VALUE)));
-
-        assertEquals("value one.two should be correct.", TWO_VALUE, propertyObject.get(ONE_TWO));
-        assertThat("value two should be a new map.", (Map<String, Object>) propertyObject.get(ONE_TWO),
-                not(sameInstance(TWO_VALUE)));
-
-        assertEquals("value one.two.three should be correct.", THREE_VALUE,
-                propertyObject.get(ONE_TWO_THREE));
-
-        assertEquals("value four should be correct.", FOUR_VALUE, propertyObject.get(FOUR));
-
-        assertEquals("value five should be correct.", FIVE_VALUE, propertyObject.get(FIVE));
-        assertThat("value five should be a new map.", (Map<String, Object>) propertyObject.get(FIVE),
-                not(sameInstance(FIVE_VALUE)));
-
-        assertEquals("value five.six should be correct.", SIX_VALUE, propertyObject.get(FIVE_SIX));
-    }
-
-    @Test
-    public void testGetInvalidLayerOneProperty() {
-
-        assertNull("getting an invalid property should return null", propertyObject.get("invalid"));
-        assertNull("getting an invalid property should return null.", propertyObject.get(ONE + ".invalid"));
-        assertNull("getting an invalid property should return null.", propertyObject.get(ONE_TWO + ".invalid"));
-        assertNull("getting an invalid property should return null.", propertyObject.get("invalid1.invalid2.invalid3"));
-    }
-
-    @Test
-    public void testPropertyObjectHasNoSharedReference() {
-
-        final Map<String, Object> map = referenceMap();
-        final Map<String, Object> two = referenceMap(map, TWO);
-        final Map<String, Object> four = referenceMap(map, FOUR);
-        final Map<String, Object> five = referenceMap(four, FIVE);
-
-        final PropertyObject propertyObject = new PropertyObject(map);
-
-        map.put(ONE, 2);
-        assertEquals("value one should be correct after the dependency map is changed.", 1, propertyObject.get(ONE));
-
-        two.put(THREE, 4);
-        assertEquals("value two.three should be correct after the dependency map is changed.", 3,
-                propertyObject.get(TWO_THREE));
-
-        four.put(FIVE, 5);
-        assertEquals("value four.five should be correct after the dependency map is changed.", five,
-                propertyObject.get(FOUR_FIVE));
-
-        five.put(SIX, 7);
-        assertEquals("value four.five.six should be correct after the dependency map is changed.", 6,
-                propertyObject.get(FOUR_FIVE_SIX));
-
-    }
-
-    @Test
-    @SuppressWarnings("unchecked")
-    public void testGetHasNoLeakedReference() {
-
-        final PropertyObject propertyObject = new PropertyObject(referenceMap());
-
-        final Map<String, Object> two = propertyObject.get(TWO);
-        final Map<String, Object> four = propertyObject.get(FOUR);
-        final Map<String, Object> five = propertyObject.get(FOUR + "." + FIVE);
-
-        two.put(THREE, 4);
-        assertEquals("value two.three should be correct after the dependency map is changed.", 3,
-                propertyObject.get(TWO + "." + THREE));
-
-        ((Map<String, Object>) four.get(FIVE)).put(SIX, 7);
-        assertEquals("value four.five should be correct after the dependency map is changed.", five,
-                propertyObject.get(FOUR_FIVE));
-
-        five.put(SIX, 8);
-        assertEquals("value four.five.six should be correct after the dependency map is changed.", 6,
-                propertyObject.get(FOUR_FIVE_SIX));
-    }
-
-    @Test
-    public void testSet() {
-
-        setTest(propertyObject);
-        setTest(copiedPropertyObject);
-    }
-
-    public static void setTest(PropertyObject propertyObject) {
-
-        propertyObject.set(ONE_TWO, NEW_VALUE);
-        propertyObject.set(ONE_THREE, NEW_VALUE);
-        propertyObject.set(ONE_FOUR, NEW_VALUE);
-
-        assertEquals("value one.two should be correct.", NEW_VALUE,
-                propertyObject.get(ONE_TWO));
-        assertEquals("value one.three should be correct.", NEW_VALUE,
-                propertyObject.get(ONE_THREE));
-        assertEquals("value one.four should be correct.", NEW_VALUE,
-                propertyObject.get(ONE_FOUR));
-
-        propertyObject.set(ONE_TWO_THREE, NEW_VALUE);
-        propertyObject.set(ONE_TWO_FOUR, NEW_VALUE);
-        propertyObject.set(ONE_TWO_FIVE, NEW_VALUE);
-
-        assertEquals("value one.two.three should be correct.", NEW_VALUE,
-                propertyObject.get(ONE_TWO_THREE));
-        assertEquals("value one.two.four should be correct.", NEW_VALUE,
-                propertyObject.get(ONE_TWO_FOUR));
-        assertEquals("value one.two.five should be correct.", NEW_VALUE,
-                propertyObject.get(ONE_TWO_FIVE));
-
-        propertyObject.set(ONE_TWO_THREE, NEW_VALUE);
-        assertEquals("value one.two.three should be correct.", NEW_VALUE,
-                propertyObject.get(ONE_TWO_THREE));
-
-        propertyObject.set(ONE_TWO, NEW_VALUE);
-        assertEquals("value one.two should be correct.", NEW_VALUE,
-                propertyObject.get(ONE_TWO));
-
-        propertyObject.set(ONE, NEW_VALUE);
-        assertEquals("value one should be correct.", NEW_VALUE,
-                propertyObject.get(ONE));
-
-        propertyObject.set(FOUR, NEW_VALUE);
-        assertEquals("value four should be correct.", NEW_VALUE,
-                propertyObject.get(FOUR));
-
-        propertyObject.set(FOUR_FIVE_SIX_SEVEN, NEW_VALUE);
-        assertEquals("value four.five.six should be correct.", singletonMap(SEVEN, NEW_VALUE),
-                propertyObject.get(FOUR_FIVE_SIX));
-        assertEquals("value four.five.six.seven should be correct.", NEW_VALUE,
-                propertyObject.get(FOUR_FIVE_SIX_SEVEN));
-
-        propertyObject.set(EIGHT_NINE_TEN, NEW_VALUE);
-        assertEquals("value eight should be correct.",
-                singletonMap(NINE, singletonMap(TEN, NEW_VALUE)),
-                propertyObject.get(EIGHT));
-        assertEquals("value eight.nine should be correct.", singletonMap(TEN, NEW_VALUE),
-                propertyObject.get(EIGHT_NINE));
-        assertEquals("value eight.nine.ten should be correct.", NEW_VALUE,
-                propertyObject.get(EIGHT_NINE_TEN));
-    }
-
     @Test(expected = NullPointerException.class)
-    public void testSetWithNullPropertyPath() {
+    public void I_cannot_create_a_property_object_from_a_null_property_object() {
 
-        propertyObject.set(null, NEW_VALUE);
+        new PropertyObject((PropertyObject) null);
     }
 
     @Test
-    public void testSetWithEmptyPropertyPath() {
+    public void I_can_get_a_value_from_a_property_object() {
 
-        propertyObject.set("", NEW_VALUE);
-        assertEquals("value for empty string should be correct.", NEW_VALUE, propertyObject.get(""));
+        final PropertyObject object = new PropertyObject(MAP);
+
+        // Also testing auto casting.
+        final int one = object.get(KEY_ONE);
+        final char five = object.get(PROPERTY_FIVE);
+        final boolean nine = object.get(PROPERTY_NINE);
+
+        assertEquals("value one should be correct.", VALUE_ONE, one);
+        assertEquals("value five should be correct.", VALUE_FIVE, five);
+        assertEquals("value nine should be correct.", VALUE_NINE, nine);
     }
 
     @Test
-    public void testSetWithEmptyFinalPropertyName() {
+    public void I_can_get_a_property_object_from_a_property_object() {
 
-        propertyObject.set(ONE_TWO_THREE + ".", NEW_VALUE);
-        assertEquals("value one.two.three. should be correct.", NEW_VALUE, propertyObject.get(ONE_TWO_THREE + "."));
+        final PropertyObject object = new PropertyObject(MAP);
+
+        final PropertyObject three = object.get(KEY_THREE);
+        final PropertyObject six = object.get(PROPERTY_SIX);
+
+        assertEquals("property object three should be correct.", new PropertyObject(MAP_THREE), three);
+        assertEquals("property object six should be correct.", new PropertyObject(MAP_SIX), six);
+
+        assertEquals("value four should be correct.", VALUE_FOUR, three.get(KEY_FOUR));
+        assertEquals("value eight six should be correct.", VALUE_EIGHT, six.get(KEY_EIGHT));
     }
 
     @Test
-    public void testSetWithNullValue() {
+    public void I_cannot_get_an_invalid_property() {
 
-        propertyObject.set(ONE_TWO_THREE, null);
-        assertNull("value one.two.three should be null.", propertyObject.get(ONE_TWO_THREE));
+        final PropertyObject object = new PropertyObject(MAP);
 
-        propertyObject.set(ONE_TWO, null);
-        assertNull("value one.two should be null.", propertyObject.get(ONE_TWO));
-
-        propertyObject.set(ONE, null);
-        assertNull("value one should be null.", propertyObject.get(ONE));
+        assertNull("no value should be retrieved for an invalid property.", object.get("invalid"));
+        assertNull("no value should be retrieved for an invalid property.", object.get("still.invalid"));
+        assertNull("no value should be retrieved for an invalid property.", object.get("yep.still.invalid"));
     }
 
     @Test
-    public void testRemove() {
+    public void I_can_set_a_property_value() {
 
-        removeTest(propertyObject);
-        removeTest(copiedPropertyObject);
+        final PropertyObject object = new PropertyObject(MAP);
+
+        final String propertyTwoDotOne = format("%s.%s", KEY_TWO, "two dot one");
+
+        final String one = "Jan";
+        final double twoDotOne = 2.1;
+        final int five = 5;
+        final boolean nine = false;
+
+        object.set(KEY_ONE, one);
+        object.set(propertyTwoDotOne, twoDotOne);
+        object.set(PROPERTY_FIVE, five);
+        object.set(PROPERTY_NINE, nine);
+
+        assertEquals("value one should be set correct.", one, object.get(KEY_ONE));
+        assertEquals("value two dot one should be set correct.", twoDotOne, object.get(propertyTwoDotOne));
+        assertEquals("value five should be set correct.", five, object.get(PROPERTY_FIVE));
+        assertEquals("value nine should be set correct.", nine, object.get(PROPERTY_NINE));
     }
 
-    public static void removeTest(final PropertyObject propertyObject) {
+    @Test
+    public void I_can_create_a_property_value() {
 
-        final String oneTwoThree = new PropertyObject(propertyObject).remove(ONE_TWO_THREE);
-        assertEquals("value one.two.three should be correct.", THREE_VALUE, oneTwoThree);
-        assertException(IllegalArgumentException.class, new Callable<Void>() {
+        final PropertyObject object = new PropertyObject(MAP);
+
+        final String keyTen = "ten";
+        final String keyEleven = "eleven";
+        String propertyTwelve = format("%s.%s", keyEleven, "twelve");
+        String propertyFourteen = format("%s.%s.%s", keyEleven, "thirteen", "fourteen");
+
+        final char ten = 'X';
+        final int twelve = 12;
+        final float fourteen = 1.4F;
+
+        object.set(keyTen, ten);
+        object.set(propertyTwelve, twelve);
+        object.set(propertyFourteen, fourteen);
+
+        assertEquals("value ten should be set correct.", ten, object.get(keyTen));
+        assertEquals("value twelve should be set correct.", twelve, object.get(propertyTwelve));
+        assertEquals("value fourteen should be set correct.", fourteen, object.get(propertyFourteen));
+    }
+
+    @Test
+    public void I_can_remove_a_property_value() {
+
+        final PropertyObject object = new PropertyObject(MAP);
+
+        object.remove(KEY_TWO);
+        object.remove(PROPERTY_FOUR);
+        object.remove(PROPERTY_SEVEN);
+
+        assertNull("value two should be removed.", object.get(KEY_TWO));
+        assertNull("value four should be removed.", object.get(PROPERTY_FOUR));
+        assertNull("value seven should be removed.", object.get(PROPERTY_SEVEN));
+    }
+
+    @Test
+    public void I_can_remove_a_property_value_from_one_object_and_it_will_not_be_removed_from_a_related_object() {
+
+        final PropertyObject object = new PropertyObject(MAP);
+        final PropertyObject objectCopy = new PropertyObject(object);
+        final PropertyObject objectThree = new PropertyObject((PropertyObject) object.get(KEY_THREE));
+        final PropertyObject objectSix = new PropertyObject((PropertyObject) object.get(PROPERTY_SIX));
+
+        object.remove(PROPERTY_EIGHT);
+
+        assertNull("value eight should be removed from parent object.", object.get(PROPERTY_EIGHT));
+
+        assertEquals("value eight should still exist in copy.", VALUE_EIGHT, objectCopy.get(PROPERTY_EIGHT));
+        assertEquals("value eight should still exist in object three.", VALUE_EIGHT,
+                objectThree.get(format("%s.%s", KEY_SIX, KEY_EIGHT)));
+        assertEquals("value eight should still exist in object six.", VALUE_EIGHT, objectSix.get(KEY_EIGHT));
+    }
+
+    @Test
+    public void I_can_clear_a_property_object() {
+
+        final PropertyObject object = new PropertyObject(MAP);
+        object.clear();
+
+        assertEquals("the property object should be empty.", new PropertyObject(), object);
+        assertEquals("the property object should be empty.", emptyMap(), object.toMap());
+    }
+
+    @Test
+    public void I_can_check_the_equality_of_a_property_object() {
+
+        I_can_check_the_equality_of_a_property_object(new Equals<PropertyObject>() {
             @Override
-            public Void call() throws Exception {
-                propertyObject.get(ONE_TWO_THREE);
-                return null;
+            public boolean equal(PropertyObject left, Object right) {
+                return left.equals(right);
             }
         });
+    }
 
-        final Map<String, Object> oneTwo = new PropertyObject(propertyObject).remove(ONE_TWO);
-        assertEquals("value one.two should be correct.", TWO_VALUE, oneTwo);
-        assertException(IllegalArgumentException.class, new Callable<Void>() {
-            @Override
-            public Void call() throws Exception {
-                propertyObject.get(ONE_TWO);
-                return null;
-            }
-        });
+    @Test
+    public void I_can_check_the_hash_code_of_a_property_object() {
 
-        final Map<String, Object> one = new PropertyObject(propertyObject).remove(ONE);
-        assertEquals("value one should be correct.", ONE_VALUE, one);
-        assertException(IllegalArgumentException.class, new Callable<Void>() {
+        I_can_check_the_equality_of_a_property_object(new Equals<PropertyObject>() {
             @Override
-            public Void call() throws Exception {
-                propertyObject.get(ONE_TWO_THREE);
-                return null;
+            public boolean equal(PropertyObject left, Object right) {
+
+                if (null == right) {
+                    return false;
+                }
+
+                return left.hashCode() == right.hashCode();
             }
         });
     }
 
     @Test
-    public void testRemoveInvalidLayerOneProperty() {
+    public void I_can_to_string_a_property_object() {
 
-        assertNull("removing an invalid property should return null.", propertyObject.remove("invalid"));
-        assertNull("removing an invalid property should return null.", propertyObject.remove(ONE + ".invalid"));
-        assertNull("removing an invalid property should return null.", propertyObject.remove(ONE_TWO + ".invalid"));
-        assertNull("removing an invalid property should return null.",
-                propertyObject.remove("invalid1.invalid2.invalid3"));
+        assertEquals("the property objects to string should be correct.", MAP.toString(),
+                new PropertyObject(MAP).toString());
     }
 
-    @Test
-    public void testToMap() {
+    private static void I_can_check_the_equality_of_a_property_object(Equals<PropertyObject> eq) {
 
-        assertEquals("the returned map should be correct.", MAP, propertyObject.toMap());
-        assertEquals("the returned map should be correct.", MAP, copiedPropertyObject.toMap());
+        final PropertyObject left = new PropertyObject(MAP);
+        final PropertyObject right = new PropertyObject(left);
+
+        assertTrue("a property object should be equal to it's self.", eq.equal(left, left));
+        assertTrue("a property object should be equal to a copy of it's self.", eq.equal(left, right));
+
+        right.remove(PROPERTY_SEVEN);
+        assertFalse("a property object should not be equal to a different property object.", eq.equal(left, right));
+        assertFalse("a property object should not be equal an object.", eq.equal(left, new Object()));
+        assertFalse("a property object should not be equal null.", eq.equal(left, null));
     }
 
-    @Test
-    @SuppressWarnings("unchecked")
-    public void testToMapHasNoLeakedReference() {
 
-        final PropertyObject propertyObject = new PropertyObject(referenceMap());
-
-        final Map<String, Object> map = propertyObject.toMap();
-        final Map<String, Object> two = referenceMap(map, TWO);
-        final Map<String, Object> four = referenceMap(map, FOUR);
-        final Map<String, Object> five = referenceMap(four, FIVE);
-
-        two.put(THREE, 4);
-        assertEquals("value two.three should be correct after the dependency map is changed.", 3,
-                propertyObject.get(TWO_THREE));
-
-        ((Map<String, Object>) four.get(FIVE)).put(SIX, 7);
-        assertEquals("value four.five should be correct after the dependency map is changed.", singletonMap(SIX, 6),
-                propertyObject.get(FOUR_FIVE));
-
-        five.put(SIX, 8);
-        assertEquals("value four.five.six should be correct after the dependency map is changed.", 6,
-                propertyObject.get(FOUR_FIVE_SIX));
-    }
-
-    @Test
-    public void testClear() {
-
-        propertyObject.clear();
-
-        assertEquals("the property object should be empty.", Collections.<String, Object>emptyMap(),
-                propertyObject.toMap());
-    }
-
-    @Test
-    public void testEquality() {
-
-        final PropertyObject other = new PropertyObject(MAP);
-
-        assertEquals("two property object built from the same map should be equal", propertyObject, other);
-        assertEquals("a copied porperty object should be equal to the original", propertyObject, copiedPropertyObject);
-    }
-
-    private static void assertException(Class<? extends Exception> type, Callable<Void> callable) {
-
-        try {
-            callable.call();
-
-        } catch (Exception e) {
-
-            assertThat("the exception should be correct.", e, instanceOf(type));
-        }
-    }
-
-    private static Map<String, Object> referenceMap() {
-
-        final Map<String, Object> two = new HashMap<>();
-        two.put(THREE, 3);
-
-        final Map<String, Object> five = new HashMap<>();
-        five.put(SIX, 6);
-
-        final Map<String, Object> four = new HashMap<>();
-        four.put(FIVE, five);
-
-        final Map<String, Object> map = new HashMap<>();
-        map.put(ONE, 1);
-        map.put(TWO, two);
-        map.put(FOUR, four);
-
-        return map;
-    }
-
-    @SuppressWarnings("unchecked")
-    private static Map<String, Object> referenceMap(Map<String, Object> map, String key) {
-
-        return (Map<String, Object>) map.get(key);
+    private static interface Equals<T> {
+        public boolean equal(T left, Object right);
     }
 }

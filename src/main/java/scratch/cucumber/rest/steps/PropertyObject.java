@@ -73,7 +73,7 @@ public class PropertyObject {
         final T value = traverse(map, propertyPath.split(DOT), null, new GetLeaf<T>(), new CheckBranch());
 
         if (value instanceof Map) {
-            return (T) deepCopyMap((Map<String, Object>) value);
+            return (T) new PropertyObject(deepCopyMap((Map<String, Object>) value));
         }
 
         return value;
@@ -113,7 +113,7 @@ public class PropertyObject {
     }
 
     private static boolean isEmpty(String[] array) {
-        return null == array || 0 == array.length;
+        return 0 == array.length;
     }
 
     /**
