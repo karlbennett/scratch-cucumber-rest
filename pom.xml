@@ -24,6 +24,26 @@
         <jacoco.version>0.7.2.201409121644</jacoco.version>
     </properties>
 
+    <profiles>
+        <profile>
+            <id>unit-tests</id>
+            <properties>
+                <skipUnitTests>false</skipUnitTests>
+                <skipIntegrationTests>true</skipIntegrationTests>
+            </properties>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+        </profile>
+        <profile>
+            <id>integration-tests</id>
+            <properties>
+                <skipUnitTests>true</skipUnitTests>
+                <skipIntegrationTests>false</skipIntegrationTests>
+            </properties>
+        </profile>
+    </profiles>
+
     <build>
         <finalName>scratch</finalName>
 
@@ -54,10 +74,22 @@
                 </executions>
             </plugin>
             <plugin>
-                <!-- Add the Maven Failsafe Plugin so that the integration tests run. -->
+                <!-- Add the Maven Surefire Plugin so that we can suppress the unit tests. -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.17</version>
+                <configuration>
+                    <skipTests>${skipUnitTests}</skipTests>
+                </configuration>
+            </plugin>
+            <plugin>
+                <!-- Add the Maven Failsafe Plugin so that the integration tests can be run and supressed. -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <version>2.17</version>
+                <configuration>
+                    <skipTests>${skipIntegrationTests}</skipTests>
+                </configuration>
                 <executions>
                     <execution>
                         <goals>

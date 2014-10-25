@@ -16,5 +16,5 @@ import org.junit.runner.RunWith;
  */
 @RunWith(Cucumber.class)
 @Cucumber.Options(format = {"pretty", "html:target/cucumber-html-report", "json:target/cucumber-json-report.json"})
-public class ITRunCucumber {
+public class RunCucumber {
 }
