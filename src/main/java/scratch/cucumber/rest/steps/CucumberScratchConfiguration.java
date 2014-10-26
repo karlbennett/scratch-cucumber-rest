@@ -14,6 +14,7 @@ import javax.ws.rs.client.ClientRequestContext;
 import javax.ws.rs.client.ClientResponseContext;
 import javax.ws.rs.client.ClientResponseFilter;
 import javax.ws.rs.client.WebTarget;
+import java.util.Set;
 
 /**
  * Test configuration that does not have the @EnableWebMvc annotation because the tests are not running with a
@@ -61,23 +62,30 @@ public class CucumberScratchConfiguration {
     @Bean
     public WebTarget client(@Value("${rest.baseUrl}") String url) {
 
-        final Responses responses = responses();
-
         final Client client = ClientBuilder.newBuilder()
                 .register(JacksonFeature.class)
-                .register(new ClientResponseFilter() {
-                    @Override
-                    public void filter(ClientRequestContext requestContext,
-                                       ClientResponseContext responseContext) {
-
-                        final ClientResponse response = (ClientResponse) responseContext;
-                        response.bufferEntity();
-
-                        responses.add(response);
-                    }
-                })
+                .register(new ResponsesFilter(responses()))
                 .build();
 
         return client.target(url);
+    }
+
+    static class ResponsesFilter implements ClientResponseFilter {
+
+        private final Responses responses;
+
+        ResponsesFilter(Responses responses) {
+            this.responses = responses;
+        }
+
+        @Override
+        public void filter(ClientRequestContext requestContext,
+                           ClientResponseContext responseContext) {
+
+            final ClientResponse response = (ClientResponse) responseContext;
+            response.bufferEntity();
+
+            responses.add(response);
+        }
     }
 }
