@@ -14,7 +14,6 @@ import javax.ws.rs.client.ClientRequestContext;
 import javax.ws.rs.client.ClientResponseContext;
 import javax.ws.rs.client.ClientResponseFilter;
 import javax.ws.rs.client.WebTarget;
-import java.util.Set;
 
 /**
  * Test configuration that does not have the @EnableWebMvc annotation because the tests are not running with a

@@ -4,7 +4,6 @@ package scratch.cucumber.rest.steps;
 import org.glassfish.jersey.client.ClientResponse;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 import org.springframework.test.context.ContextConfiguration;
@@ -13,8 +12,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import javax.ws.rs.client.WebTarget;
 
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.*;
-import static scratch.cucumber.rest.steps.CucumberScratchConfiguration.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static scratch.cucumber.rest.steps.CucumberScratchConfiguration.ResponsesFilter;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = CucumberScratchConfiguration.class)
