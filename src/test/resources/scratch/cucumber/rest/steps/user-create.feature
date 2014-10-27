@@ -15,14 +15,14 @@ Feature: User - Create
   Scenario: I create a new user and the user is persisted correctly.
     Given I create the user
     Then I should receive a status code of 201
-    And the response body should contain the new user
+    And the response body should contain an id
     And the new user should be persisted
 
   Scenario Outline: I create a user with no phone number value and the creation succeeds.
     Given the user has a "phoneNumber" of "<phone-number>"
     When I create the user
     Then I should receive a status code of 201
-    And the response body should contain the new user
+    And the response body should contain an id
     And the new user should be persisted
   Examples:
     | phone-number |
@@ -42,7 +42,7 @@ Feature: User - Create
     And the user has a "address.postcode" of "<postcode>"
     And I create the user
     Then I should receive a status code of 201
-    And the response body should contain the new user
+    And the response body should contain an id
     And the new user should be persisted
   Examples:
     | number | street     | suburb     | city        | postcode |
@@ -61,24 +61,22 @@ Feature: User - Create
     Given the user has no "phoneNumber" field
     When I create the user
     Then I should receive a status code of 201
-    And the user has a "phoneNumber" of "null"
-    And the response body should contain the new user
+    And the response body should contain an id
     And the new user should be persisted
 
   Scenario Outline: I create a user with an address that is missing a field and the creation succeeds.
     Given the user has no "address.<field-name>" field
     When I create the user
     Then I should receive a status code of 201
-    And the user has a "address.<field-name>" of <null>
-    And the response body should contain the new user
+    And the response body should contain an id
     And the new user should be persisted
   Examples:
-    | field-name | null   |
-    | number     | null   |
-    | street     | "null" |
-    | suburb     | "null" |
-    | city       | "null" |
-    | postcode   | "null" |
+    | field-name |
+    | number     |
+    | street     |
+    | suburb     |
+    | city       |
+    | postcode   |
 
   Scenario: I create the same user twice and the second creation fails.
     Given I create the user
@@ -113,7 +111,7 @@ Feature: User - Create
     And the user has a "address.postcode" of "TST124"
     And I create the user
     Then I should receive a status code of 201
-    And the response body should contain the new user
+    And the response body should contain an id
     And the new user should be persisted
   Examples:
     | first-name | last-name | phone_number |
@@ -135,7 +133,7 @@ Feature: User - Create
     And the user has a "address.postcode" of "<postcode>"
     And I create the user
     Then I should receive a status code of 201
-    And the response body should contain the new user
+    And the response body should contain an id
     And the new user should be persisted
   Examples:
     | number | street     | suburb     | city        | postcode |
@@ -150,8 +148,7 @@ Feature: User - Create
     Given the user has an "invalid" of "true"
     When I create the user
     Then I should receive a status code of 201
-    And the user has no "invalid" field
-    And the response body should contain the new user
+    And the response body should contain an id
     And the new user should be persisted
 
   Scenario Outline: I create a user with missing values and the creation fails.

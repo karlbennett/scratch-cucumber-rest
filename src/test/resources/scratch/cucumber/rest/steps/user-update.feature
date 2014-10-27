@@ -30,8 +30,8 @@ Feature: User - Update
     And the user has a "lastName" of "<last-name>"
     And the user has a "phoneNumber" of "<phone-number>"
     When I update the user
-    Then I should receive a status code of 200
-    And the response body should contain the updated user
+    Then I should receive a status code of 204
+    And the response body should be empty
     And the user should be updated
   Examples:
     | email                 | first-name | last-name | phone-number |
@@ -49,8 +49,8 @@ Feature: User - Update
     And the user has a "address.city" of "<city>"
     And the user has a "address.postcode" of "<postcode>"
     When I update the user
-    Then I should receive a status code of 200
-    And the response body should contain the updated user
+    Then I should receive a status code of 204
+    And the response body should be empty
     And the user should be updated
   Examples:
     | number | street     | suburb     | city        | postcode |
@@ -67,8 +67,8 @@ Feature: User - Update
     And the user has a "lastName" of "<last-name>"
     And the user has a "phoneNumber" of "<phone-number>"
     When I update the user
-    Then I should receive a status code of 200
-    And the response body should contain the updated user
+    Then I should receive a status code of 204
+    And the response body should be empty
     And the user should be updated
   Examples:
     | email               | first-name | last-name | phone-number |
@@ -83,8 +83,8 @@ Feature: User - Update
     And the user has a "address.city" of "<city>"
     And the user has a "address.postcode" of "<postcode>"
     When I update the user
-    Then I should receive a status code of 200
-    And the response body should contain the updated user
+    Then I should receive a status code of 204
+    And the response body should be empty
     And the user should be updated
   Examples:
     | number | street     | suburb     | city        | postcode |
@@ -101,8 +101,8 @@ Feature: User - Update
     And the user has a "lastName" of "User2"
     And the user has a "phoneNumber" of "<phone-number>"
     When I update the user
-    Then I should receive a status code of 200
-    And the response body should contain the updated user
+    Then I should receive a status code of 204
+    And the response body should be empty
     And the user should be updated
   Examples:
     | phone-number |
@@ -116,8 +116,8 @@ Feature: User - Update
     And the user has a "address.city" of "<city>"
     And the user has a "address.postcode" of "<postcode>"
     When I update the user
-    Then I should receive a status code of 200
-    And the response body should contain the updated user
+    Then I should receive a status code of 204
+    And the response body should be empty
     And the user should be updated
   Examples:
     | number | street     | suburb     | city        | postcode |
@@ -136,25 +136,23 @@ Feature: User - Update
   Scenario: I update a user with the no phone number field and the user is updated correctly.
     Given the user has no "phoneNumber" field
     When I update the user
-    Then I should receive a status code of 200
-    And the user has a "phoneNumber" of "null"
-    And the response body should contain the updated user
+    Then I should receive a status code of 204
+    And the response body should be empty
     And the user should be updated
 
   Scenario Outline: I update a users address with missing values and the user is updated correctly.
     Given the user has no "address.<field-name>" field
     When I update the user
-    Then I should receive a status code of 200
-    And the user has a "address.<field-name>" of <null>
-    And the response body should contain the updated user
+    Then I should receive a status code of 204
+    And the response body should be empty
     And the user should be updated
   Examples:
-    | field-name | null   |
-    | number     | null   |
-    | street     | "null" |
-    | suburb     | "null" |
-    | city       | "null" |
-    | postcode   | "null" |
+    | field-name |
+    | number     |
+    | street     |
+    | suburb     |
+    | city       |
+    | postcode   |
 
   Scenario: I update a user with an existing email and the update fails.
     Given the user has an "email" of "test_one@email.test"

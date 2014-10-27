@@ -12,8 +12,11 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
+import static java.util.Collections.singleton;
 import static javax.ws.rs.client.Invocation.Builder;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
@@ -76,6 +79,34 @@ public class UserCreateStepsTest {
         mockRetrieveUser(map, mock(Map.class));
 
         steps.the_new_user_should_be();
+    }
+
+    @Test
+    public void I_can_check_that_the_response_body_only_contains_the_id() {
+
+        when(map.keySet()).thenReturn(singleton("id"));
+
+        final ClientResponse response = mockClientResponse(map);
+
+        when(responses.latest()).thenReturn(response);
+
+        steps.the_response_body_should_contain_an_id();
+    }
+
+    @Test(expected = AssertionError.class)
+    public void I_can_check_that_the_response_body_does_not_just_contain_the_id() {
+
+        final Set<String> keys = new HashSet<>();
+        keys.add("id");
+        keys.add("email");
+
+        when(map.keySet()).thenReturn(keys);
+
+        final ClientResponse response = mockClientResponse(map);
+
+        when(responses.latest()).thenReturn(response);
+
+        steps.the_response_body_should_contain_an_id();
     }
 
     private void mockRetrieveUser(Map expected, Map actual) {

@@ -7,12 +7,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-
-import static java.util.Collections.singleton;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -126,63 +120,33 @@ public class UserStepsTest {
     }
 
     @Test
-    public void I_can_check_that_the_user_is_in_the_response_body() {
-
-        final HashMap<String, Object> map = new HashMap<>();
+    public void I_can_check_that_the_response_body_is_empty() {
 
         final ClientResponse response = mock(ClientResponse.class);
-        when(response.readEntity(Map.class)).thenReturn(map);
-
-        when(user.toMap()).thenReturn(map);
-        when(responses.latest()).thenReturn(response);
-
-        steps.the_response_body_should_contain_the_user();
-    }
-
-    @Test(expected = AssertionError.class)
-    public void I_can_check_that_the_user_is_not_in_the_response_body() {
-
-        when(user.toMap()).thenReturn(Collections.<String, Object>singletonMap("email", 1));
-
-        final ClientResponse response = mock(ClientResponse.class);
-        when(response.readEntity(Map.class)).thenReturn(Collections.<String, Object>singletonMap("email", 2));
+        when(response.readEntity(String.class)).thenReturn("");
 
         when(responses.latest()).thenReturn(response);
 
-        steps.the_response_body_should_contain_the_user();
+        steps.the_response_body_should_be_empty();
     }
 
     @Test
-    public void I_can_check_that_the_right_users_are_in_the_response_body() {
+    public void I_can_check_that_the_response_body_is_null() {
 
-        final Map map = mock(Map.class);
-        final Set<Map> users = singleton(map);
+        when(responses.latest()).thenReturn(mock(ClientResponse.class));
 
-        final ClientResponse response = mock(ClientResponse.class);
-        when(response.readEntity(Set.class)).thenReturn(users);
-        when(response.readEntity(Map.class)).thenReturn(map);
-
-        when(responses.latest()).thenReturn(response);
-        when(responses.created()).thenReturn(responses);
-        when(responses.iterator()).thenReturn(singleton(response).iterator());
-
-        steps.the_response_body_should_contain_all_the_requested_users();
+        steps.the_response_body_should_be_empty();
     }
 
     @Test(expected = AssertionError.class)
-    public void I_can_check_that_the_wrong_users_are_in_the_response_body() {
-
-        final Set<Map> users = singleton(mock(Map.class));
+    public void I_can_check_that_the_response_body_is_not_empty() {
 
         final ClientResponse response = mock(ClientResponse.class);
-        when(response.readEntity(Set.class)).thenReturn(users);
-        when(response.readEntity(Map.class)).thenReturn(mock(Map.class));
+        when(response.readEntity(String.class)).thenReturn("not empty");
 
         when(responses.latest()).thenReturn(response);
-        when(responses.created()).thenReturn(responses);
-        when(responses.iterator()).thenReturn(singleton(response).iterator());
 
-        steps.the_response_body_should_contain_all_the_requested_users();
+        steps.the_response_body_should_be_empty();
     }
 
     @Test
