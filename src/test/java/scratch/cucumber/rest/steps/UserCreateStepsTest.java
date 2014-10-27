@@ -12,6 +12,7 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -24,7 +25,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static scratch.cucumber.rest.steps.Mocks.mockClientResponse;
-import static scratch.cucumber.rest.steps.Mocks.mockMap;
+import static scratch.cucumber.rest.steps.UserFields.ID;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UserCreateStepsTest {
@@ -68,17 +69,41 @@ public class UserCreateStepsTest {
     @Test
     public void I_can_check_for_a_persisted_user() {
 
+        final Map<String, Object> map = new HashMap<>();
+        map.put("id", 1);
+        map.put("address", new HashMap<String, Object>() {{
+            put("id", 2);
+        }});
+
         mockRetrieveUser(map, map);
 
-        steps.the_new_user_should_be();
+        steps.the_new_user_should_be_persisted();
+    }
+
+    @Test
+    public void I_can_check_for_a_persisted_user_with_no_address() {
+
+        final Map<String, Object> map = new HashMap<>();
+        map.put("id", 1);
+
+        mockRetrieveUser(map, map);
+
+        steps.the_new_user_should_be_persisted();
     }
 
     @Test(expected = AssertionError.class)
     public void I_can_check_for_a_non_persisted_user() {
 
-        mockRetrieveUser(map, mock(Map.class));
+        final Map<String, Object> expected = new HashMap<>();
+        expected.put("id", 1);
 
-        steps.the_new_user_should_be();
+        final Map<String, Object> actual = new HashMap<>();
+        actual.put("id", 1);
+        actual.put("email", "test email");
+
+        mockRetrieveUser(expected, actual);
+
+        steps.the_new_user_should_be_persisted();
     }
 
     @Test
@@ -109,19 +134,17 @@ public class UserCreateStepsTest {
         steps.the_response_body_should_contain_an_id();
     }
 
+    @SuppressWarnings("unchecked")
     private void mockRetrieveUser(Map expected, Map actual) {
 
-        final String id = "test id";
-
-        mockMap(expected, id);
-
-        final ClientResponse clientResponse = mockClientResponse(expected);
+        final ClientResponse clientResponse = mockClientResponse(actual);
 
         final Response response = mock(Response.class);
         when(response.readEntity(Map.class)).thenReturn(actual);
 
+        when(user.toMap()).thenReturn(expected);
         when(responses.latest()).thenReturn(clientResponse);
-        when(client.path(id)).thenReturn(client);
+        when(client.path(actual.get(ID).toString())).thenReturn(client);
         when(builder.get()).thenReturn(response);
     }
 }

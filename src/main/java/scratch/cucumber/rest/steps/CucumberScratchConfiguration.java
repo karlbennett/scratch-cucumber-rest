@@ -1,5 +1,6 @@
 package scratch.cucumber.rest.steps;
 
+import org.glassfish.jersey.client.ClientRequest;
 import org.glassfish.jersey.client.ClientResponse;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.springframework.beans.factory.annotation.Value;
@@ -50,6 +51,15 @@ public class CucumberScratchConfiguration {
      * A history of all the responses that has been returned during a scenario.
      */
     @Bean
+    public Requests requests() {
+
+        return new Requests();
+    }
+
+    /**
+     * A history of all the responses that has been returned during a scenario.
+     */
+    @Bean
     public Responses responses() {
 
         return new Responses();
@@ -63,7 +73,7 @@ public class CucumberScratchConfiguration {
 
         final Client client = ClientBuilder.newBuilder()
                 .register(JacksonFeature.class)
-                .register(new ResponsesFilter(responses()))
+                .register(new ResponsesFilter(requests(), responses()))
                 .build();
 
         return client.target(url);
@@ -72,14 +82,18 @@ public class CucumberScratchConfiguration {
     static class ResponsesFilter implements ClientResponseFilter {
 
         private final Responses responses;
+        private final Requests requests;
 
-        ResponsesFilter(Responses responses) {
+        ResponsesFilter(Requests requests, Responses responses) {
+            this.requests = requests;
             this.responses = responses;
         }
 
         @Override
         public void filter(ClientRequestContext requestContext,
                            ClientResponseContext responseContext) {
+
+            requests.add((ClientRequest) requestContext);
 
             final ClientResponse response = (ClientResponse) responseContext;
             response.bufferEntity();

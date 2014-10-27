@@ -1,6 +1,7 @@
 package scratch.cucumber.rest.steps;
 
 
+import org.glassfish.jersey.client.ClientRequest;
 import org.glassfish.jersey.client.ClientResponse;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,6 +28,9 @@ public class CucumberScratchConfigurationTest {
     public PropertyObject user;
 
     @Autowired
+    public Requests requests;
+
+    @Autowired
     public Responses responses;
 
     @Autowired
@@ -45,6 +49,12 @@ public class CucumberScratchConfigurationTest {
     }
 
     @Test
+    public void I_can_inject_the_requests() {
+
+        assertNotNull("the requests should be injected.", requests);
+    }
+
+    @Test
     public void I_can_inject_the_responses() {
 
         assertNotNull("the responses should be injected.", responses);
@@ -59,11 +69,15 @@ public class CucumberScratchConfigurationTest {
     @Test
     public void I_can_record_a_response_made_through_the_client() {
 
+        final Requests requests = mock(Requests.class);
         final Responses responses = mock(Responses.class);
+
+        final ClientRequest request = mock(ClientRequest.class);
         final ClientResponse response = mock(ClientResponse.class);
 
-        new ResponsesFilter(responses).filter(null, response);
+        new ResponsesFilter(requests, responses).filter(request, response);
 
+        verify(requests).add(request);
         verify(response).bufferEntity();
         verify(responses).add(response);
     }

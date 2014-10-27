@@ -2,6 +2,7 @@ package scratch.cucumber.rest.steps;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
+import org.glassfish.jersey.client.ClientRequest;
 import org.glassfish.jersey.client.ClientResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -24,6 +25,9 @@ public class UserRetrieveSteps {
 
     @Autowired
     private WebTarget client;
+
+    @Autowired
+    public Requests requests;
 
     @Autowired
     private Responses responses;
@@ -69,17 +73,21 @@ public class UserRetrieveSteps {
     @SuppressWarnings("unchecked")
     public void the_response_body_should_contain_all_the_requested_users() {
 
-        final Set<Map<String, Object>> retrievedUsers = responses.latest().readEntity(Set.class);
-
-        final Set<Map<String, Object>> createdUsers = new HashSet<>();
-        for (ClientResponse response : responses.created()) {
-
-            createdUsers.add(response.readEntity(Map.class));
+        final Set<Map> createdUsers = new HashSet<>();
+        for (ClientRequest request : requests.created()) {
+            createdUsers.add((Map) request.getEntity());
         }
 
-        assertEquals("the number of retrieved users should equal the number of create users.", createdUsers.size(),
-                retrievedUsers.size());
+        final Set<Map> retrievedUsers = (Set<Map>) responses.latest().readEntity(Set.class);
+        for (Map body : retrievedUsers) {
+            body.remove(ID);
 
-        assertEquals("the retrieved users equal create users.", createdUsers, retrievedUsers);
+            final Object address = body.get("address");
+            if (null != address) {
+                ((Map) address).remove(ID);
+            }
+        }
+
+        assertEquals("retrieved users should be correct.", createdUsers, retrievedUsers);
     }
 }

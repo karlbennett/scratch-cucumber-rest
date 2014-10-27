@@ -1,5 +1,6 @@
 package scratch.cucumber.rest.steps;
 
+import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import org.glassfish.jersey.client.ClientResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import javax.ws.rs.core.MediaType;
 import java.util.Map;
 
 import static javax.ws.rs.client.Entity.json;
+import static org.junit.Assert.assertEquals;
 import static scratch.cucumber.rest.steps.UserFields.ID;
 
 @ContextConfiguration(classes = CucumberScratchConfiguration.class)
@@ -35,5 +37,19 @@ public class UserUpdateSteps {
         final String id = body.get(ID).toString();
 
         client.path(id).request(MediaType.APPLICATION_JSON_TYPE).put(json(user.toMap()));
+    }
+
+    @Then("^the user should be updated$")
+    @SuppressWarnings("unchecked")
+    public void the_user_should_be_updated() {
+
+        final Map<String, Object> body = responses.latest().readEntity(Map.class);
+
+        final Map<String, Object> user = client.path(body.get(ID).toString())
+                .request(MediaType.APPLICATION_JSON_TYPE)
+                .get()
+                .readEntity(Map.class);
+
+        assertEquals("the user should have been persisted.", body, user);
     }
 }

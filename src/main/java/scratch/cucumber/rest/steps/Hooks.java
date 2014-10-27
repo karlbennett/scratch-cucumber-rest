@@ -24,12 +24,16 @@ public class Hooks {
     private WebTarget client;
 
     @Autowired
+    private Requests requests;
+
+    @Autowired
     private Responses responses;
 
     @Before
     public void setup() {
 
         user.clear();
+        requests.clear();
         responses.clear();
 
         @SuppressWarnings("unchecked")

@@ -1,5 +1,6 @@
 package scratch.cucumber.rest.steps;
 
+import org.glassfish.jersey.client.ClientRequest;
 import org.glassfish.jersey.client.ClientResponse;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,6 +29,9 @@ public class UserRetrieveStepsTest {
 
     @Mock
     private WebTarget client;
+
+    @Mock
+    private Requests requests;
 
     @Mock
     private Responses responses;
@@ -86,15 +90,41 @@ public class UserRetrieveStepsTest {
     public void I_can_check_that_the_right_users_are_in_the_response_body() {
 
         final Map map = mock(Map.class);
+        when(map.get("address")).thenReturn(map);
+
         final Set<Map> users = singleton(map);
+
+        final ClientRequest request = mock(ClientRequest.class);
+        when(request.getEntity()).thenReturn(map);
 
         final ClientResponse response = mock(ClientResponse.class);
         when(response.readEntity(Set.class)).thenReturn(users);
-        when(response.readEntity(Map.class)).thenReturn(map);
+
+        when(requests.created()).thenReturn(requests);
+        when(requests.iterator()).thenReturn(singleton(request).iterator());
 
         when(responses.latest()).thenReturn(response);
-        when(responses.created()).thenReturn(responses);
-        when(responses.iterator()).thenReturn(singleton(response).iterator());
+
+        steps.the_response_body_should_contain_all_the_requested_users();
+    }
+
+    @Test
+    public void I_can_check_that_the_right_users_are_in_the_response_body_with_no_address() {
+
+        final Map map = mock(Map.class);
+
+        final Set<Map> users = singleton(map);
+
+        final ClientRequest request = mock(ClientRequest.class);
+        when(request.getEntity()).thenReturn(map);
+
+        final ClientResponse response = mock(ClientResponse.class);
+        when(response.readEntity(Set.class)).thenReturn(users);
+
+        when(requests.created()).thenReturn(requests);
+        when(requests.iterator()).thenReturn(singleton(request).iterator());
+
+        when(responses.latest()).thenReturn(response);
 
         steps.the_response_body_should_contain_all_the_requested_users();
     }
@@ -104,13 +134,16 @@ public class UserRetrieveStepsTest {
 
         final Set<Map> users = singleton(mock(Map.class));
 
+        final ClientRequest request = mock(ClientRequest.class);
+        when(request.getEntity()).thenReturn(mock(Map.class));
+
         final ClientResponse response = mock(ClientResponse.class);
         when(response.readEntity(Set.class)).thenReturn(users);
-        when(response.readEntity(Map.class)).thenReturn(mock(Map.class));
+
+        when(requests.created()).thenReturn(requests);
+        when(requests.iterator()).thenReturn(singleton(request).iterator());
 
         when(responses.latest()).thenReturn(response);
-        when(responses.created()).thenReturn(responses);
-        when(responses.iterator()).thenReturn(singleton(response).iterator());
 
         steps.the_response_body_should_contain_all_the_requested_users();
     }

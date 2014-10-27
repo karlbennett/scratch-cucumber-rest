@@ -27,6 +27,9 @@ public class HooksTest {
     private WebTarget client;
 
     @Mock
+    private Requests requests;
+
+    @Mock
     private Responses responses;
 
     @InjectMocks
@@ -49,6 +52,7 @@ public class HooksTest {
         hooks.setup();
 
         verify(user).clear();
+        verify(requests).clear();
         verify(responses).clear();
         verify(builder).delete();
     }

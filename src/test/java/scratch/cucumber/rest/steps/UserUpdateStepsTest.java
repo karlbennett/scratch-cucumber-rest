@@ -38,4 +38,12 @@ public class UserUpdateStepsTest {
 
         verify(builder).put(any(Entity.class));
     }
+
+    @Test
+    public void I_can_check_that_the_user_has_been_updated() {
+
+        mockRetrieveUser(responses, client);
+
+        steps.the_user_should_be_updated();
+    }
 }

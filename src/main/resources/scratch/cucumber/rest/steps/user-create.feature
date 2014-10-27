@@ -62,6 +62,7 @@ Feature: User - Create
     When I create the user
     Then I should receive a status code of 201
     And the response body should contain an id
+    And the user has a "phoneNumber" of "null"
     And the new user should be persisted
 
   Scenario Outline: I create a user with an address that is missing a field and the creation succeeds.
@@ -69,14 +70,15 @@ Feature: User - Create
     When I create the user
     Then I should receive a status code of 201
     And the response body should contain an id
+    And the user has a "address.<field-name>" of <null>
     And the new user should be persisted
   Examples:
-    | field-name |
-    | number     |
-    | street     |
-    | suburb     |
-    | city       |
-    | postcode   |
+    | field-name | null   |
+    | number     | null   |
+    | street     | "null" |
+    | suburb     | "null" |
+    | city       | "null" |
+    | postcode   | "null" |
 
   Scenario: I create the same user twice and the second creation fails.
     Given I create the user
@@ -149,6 +151,7 @@ Feature: User - Create
     When I create the user
     Then I should receive a status code of 201
     And the response body should contain an id
+    And the user has no "invalid" field
     And the new user should be persisted
 
   Scenario Outline: I create a user with missing values and the creation fails.

@@ -4,29 +4,42 @@ import org.glassfish.jersey.client.ClientResponse;
 
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.util.Map;
 
+import static java.util.Collections.singletonMap;
 import static javax.ws.rs.client.Invocation.Builder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static scratch.cucumber.rest.steps.UserFields.ID;
 
 /**
  * Helper methods for building mocks for the tests.
  */
 public class Mocks {
 
-    public static Map mockMap(String id) {
+    public static Builder mockRetrieveUser(Responses responses, WebTarget client) {
 
-        final Map map = mock(Map.class);
-
-        mockMap(map, id);
-
-        return map;
+        return mockRetrieveUser(responses, client, "test id");
     }
 
-    public static void mockMap(Map map, String id) {
+    public static Builder mockRetrieveUser(Responses responses, WebTarget client, String id) {
 
-        when(map.get("id")).thenReturn(id);
+        final Map map = singletonMap(ID, id);
+
+        final ClientResponse clientResponse = mockClientResponse(map);
+
+        mockLatestCreateResponse(responses, clientResponse);
+
+        final Response response = mock(Response.class);
+        when(response.readEntity(Map.class)).thenReturn(map);
+
+        final Builder builder = mock(Builder.class);
+        when(builder.get()).thenReturn(response);
+
+        mockPath(client, builder, id);
+
+        return builder;
     }
 
     public static ClientResponse mockClientResponse(Map map) {
@@ -47,25 +60,5 @@ public class Mocks {
 
         when(client.path(id)).thenReturn(client);
         when(client.request(MediaType.APPLICATION_JSON_TYPE)).thenReturn(builder);
-    }
-
-    public static Builder mockRetrieveUser(Responses responses, WebTarget client) {
-
-        return mockRetrieveUser(responses, client, "test id");
-    }
-
-    public static Builder mockRetrieveUser(Responses responses, WebTarget client, String id) {
-
-        final Map map = mockMap(id);
-
-        final ClientResponse response = mockClientResponse(map);
-
-        mockLatestCreateResponse(responses, response);
-
-        final Builder builder = mock(Builder.class);
-
-        mockPath(client, builder, id);
-
-        return builder;
     }
 }
