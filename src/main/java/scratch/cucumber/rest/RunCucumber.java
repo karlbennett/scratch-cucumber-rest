@@ -12,6 +12,9 @@ import org.junit.runner.RunWith;
  * {@link cucumber.api.java.en.And}. These will be run if they match any steps that have been referenced in any
  * {@code *.feature} files that reside in the same package.
  *
+ * Usage: To have this class automatically run by maven extend it with a class that resides in the {@code src/test/java}
+ * directory.
+ *
  * @author Karl Bennett
  */
 @RunWith(Cucumber.class)
