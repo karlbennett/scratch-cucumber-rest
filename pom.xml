@@ -215,14 +215,14 @@
             <version>2.13</version>
         </dependency>
 
-        <!-- SLF4J is the logging API used by many of the third party libraries..-->
+        <!-- SLF4J is the logging API used by many of the third party libraries. -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>${slf4j.version}</version>
         </dependency>
 
-        <!-- This dependency allows SLF4J to be configured with Log4j.-->
+        <!-- This dependency allows SLF4J to be configured with Log4j. -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
