@@ -1,7 +1,7 @@
 scratch-cucumber-rest
 =====================
 
-An simple example of using Cucumber to test a RESTful endpoint. It has been written to test a CRUD enpoint for a user entity with the following scheme.
+A simple example of using Cucumber to test a RESTful endpoint. It has been written to test a CRUD enpoint for a user entity with the following scheme.
 
 ```json
 {
