@@ -138,6 +138,7 @@ Feature: User - Update
     When I update the user
     Then I should receive a status code of 204
     And the response body should be empty
+    And the user has a "phoneNumber" of "null"
     And the user should be updated
 
   Scenario Outline: I update a users address with missing values and the user is updated correctly.
@@ -145,14 +146,15 @@ Feature: User - Update
     When I update the user
     Then I should receive a status code of 204
     And the response body should be empty
+    And the user has a "address.<field-name>" of <null>
     And the user should be updated
   Examples:
-    | field-name |
-    | number     |
-    | street     |
-    | suburb     |
-    | city       |
-    | postcode   |
+    | field-name | null   |
+    | number     | null   |
+    | street     | "null" |
+    | suburb     | "null" |
+    | city       | "null" |
+    | postcode   | "null" |
 
   Scenario: I update a user with an existing email and the update fails.
     Given the user has an "email" of "test_one@email.test"

@@ -11,7 +11,6 @@ import javax.ws.rs.core.MediaType;
 import java.util.Map;
 
 import static javax.ws.rs.client.Entity.json;
-import static org.junit.Assert.assertEquals;
 import static scratch.cucumber.rest.steps.UserFields.ID;
 
 @ContextConfiguration(classes = CucumberScratchConfiguration.class)
@@ -24,7 +23,13 @@ public class UserUpdateSteps {
     private WebTarget client;
 
     @Autowired
+    private Requests requests;
+
+    @Autowired
     private Responses responses;
+
+    @Autowired
+    private UserSteps steps;
 
     @When("^I update the user$")
     public void I_update_the_user() {
@@ -43,13 +48,8 @@ public class UserUpdateSteps {
     @SuppressWarnings("unchecked")
     public void the_user_should_be_updated() {
 
-        final Map<String, Object> body = responses.latest().readEntity(Map.class);
+        final String id = requests.updated().latest().getUri().getPath().replaceAll("(?:/[a-zA-Z]*)*/", "");
 
-        final Map<String, Object> user = client.path(body.get(ID).toString())
-                .request(MediaType.APPLICATION_JSON_TYPE)
-                .get()
-                .readEntity(Map.class);
-
-        assertEquals("the user should have been persisted.", body, user);
+        steps.the_user_should_be_persisted_with_id(Integer.valueOf(id));
     }
 }

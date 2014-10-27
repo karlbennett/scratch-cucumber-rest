@@ -12,7 +12,6 @@ import java.util.Map;
 import static java.util.Collections.singleton;
 import static javax.ws.rs.client.Entity.json;
 import static org.junit.Assert.assertEquals;
-import static scratch.cucumber.rest.steps.UserFields.ADDRESS_ID;
 import static scratch.cucumber.rest.steps.UserFields.ID;
 
 @ContextConfiguration(classes = CucumberScratchConfiguration.class)
@@ -27,6 +26,9 @@ public class UserCreateSteps {
     @Autowired
     private Responses responses;
 
+    @Autowired
+    private UserSteps steps;
+
     @When("^I create the user(?: again)?$")
     public void I_create_the_user() {
 
@@ -37,24 +39,9 @@ public class UserCreateSteps {
     @SuppressWarnings("unchecked")
     public void the_new_user_should_be_persisted() {
 
-        final Integer id = Integer.valueOf(responses.latest().readEntity(Map.class).get(ID).toString());
+        final String id = responses.latest().readEntity(Map.class).get(ID).toString();
 
-        final PropertyObject actual = new PropertyObject(
-                client.path(id.toString())
-                        .request(MediaType.APPLICATION_JSON_TYPE)
-                        .get()
-                        .readEntity(Map.class)
-        );
-
-        user.set(ID, id);
-
-        final Object addressId = actual.get(ADDRESS_ID);
-
-        if (null != addressId) {
-            user.set(ADDRESS_ID, addressId);
-        }
-
-        assertEquals("the user should have been persisted.", user.toMap(), actual.toMap());
+        steps.the_user_should_be_persisted_with_id(Integer.valueOf(id));
     }
 
     @Then("^the response body should contain an id$")

@@ -4,33 +4,26 @@ import org.glassfish.jersey.client.ClientRequest;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.Iterator;
 
 import static javax.ws.rs.HttpMethod.POST;
+import static javax.ws.rs.HttpMethod.PUT;
 
-public class Requests extends Holder<Deque<ClientRequest>> implements Iterable<ClientRequest> {
+public class Requests extends History<Requests, ClientRequest, String> {
 
     public Requests() {
         this(new ArrayDeque<ClientRequest>());
     }
 
     public Requests(Deque<ClientRequest> responses) {
-        super(responses);
+        super(responses, POST);
     }
 
-    public void add(ClientRequest response) {
-        get().push(response);
+    public Requests updated() {
+
+        return filter(PUT);
     }
 
-    public ClientRequest latest() {
-        return get().peek();
-    }
-
-    public Requests created() {
-
-        return filter(POST);
-    }
-
+    @Override
     public Requests filter(String method) {
 
         final Requests requests = new Requests();
@@ -43,14 +36,5 @@ public class Requests extends Holder<Deque<ClientRequest>> implements Iterable<C
         }
 
         return requests;
-    }
-
-    public void clear() {
-        get().clear();
-    }
-
-    @Override
-    public Iterator<ClientRequest> iterator() {
-        return get().iterator();
     }
 }

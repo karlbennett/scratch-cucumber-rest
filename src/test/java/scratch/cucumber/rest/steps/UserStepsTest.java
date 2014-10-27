@@ -7,18 +7,29 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.util.HashMap;
+import java.util.Map;
+
+import static javax.ws.rs.client.Invocation.Builder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
+import static scratch.cucumber.rest.steps.Mocks.mockClientResponse;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UserStepsTest {
 
     @Mock
     private PropertyObject user;
+
+    @Mock
+    private WebTarget client;
 
     @Mock
     private Responses responses;
@@ -158,5 +169,73 @@ public class UserStepsTest {
 
         verify(user).remove(fieldName);
         verifyNoMoreInteractions(user);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void I_can_check_that_a_user_is_persisted() {
+
+        final int id = 1;
+
+        final Map map = new HashMap();
+        map.put("id", id);
+        map.put("address", new HashMap() {{
+            put("id", 2);
+        }});
+
+        mockRetrieveUser(map, map);
+
+        steps.the_user_should_be_persisted_with_id(id);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void I_can_check_that_a_user_is_persisted_without_an_address() {
+
+        final int id = 1;
+
+        final Map map = new HashMap();
+        map.put("id", id);
+
+        mockRetrieveUser(map, map);
+
+        steps.the_user_should_be_persisted_with_id(id);
+    }
+
+    @Test(expected = AssertionError.class)
+    @SuppressWarnings("unchecked")
+    public void I_can_check_that_a_user_is_not_persisted() {
+
+        final int id = 1;
+
+        final Map expected = new HashMap();
+        expected.put("id", id);
+
+        final Map actual = new HashMap();
+        actual.put("id", id);
+        actual.put("email", "test email");
+
+        mockRetrieveUser(expected, actual);
+
+        steps.the_user_should_be_persisted_with_id(id);
+    }
+
+    @SuppressWarnings("unchecked")
+    private void mockRetrieveUser(Map expected, Map actual) {
+
+        final ClientResponse clientResponse = mockClientResponse(expected);
+
+        when(user.toMap()).thenReturn(expected);
+
+        when(responses.latest()).thenReturn(clientResponse);
+
+        final Response response = mock(Response.class);
+        when(response.readEntity(Map.class)).thenReturn(actual);
+
+        final Builder builder = mock(Builder.class);
+        when(builder.get()).thenReturn(response);
+
+        when(client.path(actual.get("id").toString())).thenReturn(client);
+        when(client.request(MediaType.APPLICATION_JSON_TYPE)).thenReturn(builder);
     }
 }

@@ -136,6 +136,22 @@ public class RequestsTest {
     }
 
     @Test
+    public void I_can_get_all_the_updated_requests_from_the_requests_history() {
+
+        when(requestOne.getMethod()).thenReturn(PUT);
+        when(requestTwo.getMethod()).thenReturn(GET);
+        when(requestThree.getMethod()).thenReturn(PUT);
+
+        final Requests requests = new Requests();
+        requests.add(requestOne);
+        requests.add(requestTwo);
+        requests.add(requestThree);
+
+        assertThat("the updated requests should be correct.", requests.updated(),
+                hasItems(requestOne, requestThree));
+    }
+
+    @Test
     public void I_cannot_get_any_created_requests_from_the_requests_if_non_exists() {
 
         when(requestOne.getMethod()).thenReturn(GET);
