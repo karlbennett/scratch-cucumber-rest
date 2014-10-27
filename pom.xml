@@ -37,7 +37,7 @@
             </activation>
         </profile>
         <profile>
-            <id>integration-tests</id>
+            <id>cucumber</id>
             <properties>
                 <skipUnitTests>true</skipUnitTests>
                 <skipIntegrationTests>false</skipIntegrationTests>
