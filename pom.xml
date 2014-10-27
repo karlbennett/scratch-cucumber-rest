@@ -75,7 +75,8 @@
                 </executions>
             </plugin>
             <plugin>
-                <!-- Add the Maven Surefire Plugin so that we can suppress the unit tests. -->
+                <!-- Add the Maven Surefire Plugin so that we can suppress the unit tests when running the Cucumber -->
+                <!-- scenarios. -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.17</version>
@@ -84,7 +85,7 @@
                 </configuration>
             </plugin>
             <plugin>
-                <!-- Add the Maven Failsafe Plugin so that the integration tests can be run and supressed. -->
+                <!-- Add the Maven Failsafe Plugin so that the Cucumber tests can be run and suppressed when running the tests. -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <version>2.17</version>
@@ -124,7 +125,7 @@
     </build>
 
     <reporting>
-        <!-- Configure the Maven source control report. -->
+        <!-- Stop any default reports from being generated in the Maven site. -->
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -174,7 +175,7 @@
             <version>4.11</version>
         </dependency>
 
-        <!-- Hamcrest matchers that extend the JUNit matchers. -->
+        <!-- Hamcrest matchers that extend the JUnit matchers. -->
         <dependency>
             <groupId>org.hamcrest</groupId>
             <artifactId>hamcrest-all</artifactId>
@@ -186,13 +187,6 @@
             <groupId>org.mockito</groupId>
             <artifactId>mockito-all</artifactId>
             <version>1.10.8</version>
-        </dependency>
-
-        <!-- This dependency is required to use the Spring MVC test jsonPath() methods. -->
-        <dependency>
-            <groupId>com.jayway.jsonpath</groupId>
-            <artifactId>json-path</artifactId>
-            <version>[0.9.1]</version>
         </dependency>
 
         <!-- Cucumber dependencies. -->
@@ -221,21 +215,21 @@
             <version>2.13</version>
         </dependency>
 
-        <!-- SLF4J is required for Hibernate logging.-->
+        <!-- SLF4J is the logging API used by many of the third party libraries..-->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>${slf4j.version}</version>
         </dependency>
 
-        <!-- The SLF4J Log4j implementation.-->
+        <!-- This dependency allows SLF4J to be configured with Log4j.-->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
             <version>${slf4j.version}</version>
         </dependency>
 
-        <!-- Log4j added to allow log configuration through log4j. -->
+        <!-- Log4j is used for log configuration. -->
         <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
