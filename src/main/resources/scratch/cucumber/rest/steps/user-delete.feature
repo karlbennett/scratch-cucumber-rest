@@ -28,6 +28,7 @@ Feature: User - Delete
     When I delete an existing user
     Then I should receive a status code of 204
     And the response body should be empty
+    And the user should be deleted
 
   Scenario: I delete an existing user twice and the delete fails.
     Given I delete an existing user
