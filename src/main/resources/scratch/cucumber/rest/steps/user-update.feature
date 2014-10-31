@@ -95,6 +95,11 @@ Feature: User - Update
     | 22     | Test1 Road | Testerton1 | Testopolis1 | TST123   |
     | 11     | Test Road  | Testerton  | Testopolis  | TST123   |
 
+  Scenario: I update a user with an invalid field and the creation fails.
+    Given the user has an "invalid" of "true"
+    When I update the user
+    Then I should receive a status code of 400
+
   Scenario Outline: I update a user with the no phone number value and the user is updated correctly.
     Given the user has an "email" of "test_two@email.test"
     And the user has a "firstName" of "Test2"

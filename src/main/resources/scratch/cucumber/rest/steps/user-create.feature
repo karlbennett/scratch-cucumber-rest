@@ -146,13 +146,10 @@ Feature: User - Create
     | 22     | Test1 Road | Testerton1 | Testopolis1 | TST123   |
     | 11     | Test Road  | Testerton  | Testopolis  | TST123   |
 
-  Scenario: I create a user with an invalid field and the user is persisted correctly.
+  Scenario: I create a user with an invalid field and the creation fails.
     Given the user has an "invalid" of "true"
     When I create the user
-    Then I should receive a status code of 201
-    And the response body should contain an id
-    And the user has no "invalid" field
-    And the new user should be persisted
+    Then I should receive a status code of 400
 
   Scenario Outline: I create a user with missing values and the creation fails.
     Given the user has an "email" of "<email>"
